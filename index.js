@@ -4,10 +4,8 @@ const dotenv = require("dotenv");
 const Joi = require("joi");
 const nodemailer = require("nodemailer");
 
-const publicPath = path.join(__dirname, "public");
 const app = express();
 app.use(cors());
-app.use(express.static(publicPath));
 dotenv.config();
 
 // input validation
@@ -80,7 +78,7 @@ app.all("*", (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => console.log(`Server is listening on port  ${PORT}`));
 

